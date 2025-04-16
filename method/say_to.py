@@ -1,5 +1,6 @@
 from gdo.base.GDT import GDT
 from gdo.base.Method import Method
+from gdo.core.Connector import Connector
 from gdo.core.GDO_User import GDO_User
 from gdo.core.GDT_RestOfText import GDT_RestOfText
 from gdo.core.GDT_User import GDT_User
@@ -11,7 +12,7 @@ class say_to(Method):
         return 'say.to'
 
     def gdo_connectors(self) -> str:
-        return "irc,telegram,discord,whatsapp"
+        return Connector.TEXT_CONNECTORS # "irc,telegram,discord,whatsapp"
 
     def gdo_parameters(self) -> [GDT]:
         return [
