@@ -12,7 +12,7 @@ class say_to(Method):
         return 'say.to'
 
     def gdo_connectors(self) -> str:
-        return Connector.TEXT_CONNECTORS # "irc,telegram,discord,whatsapp"
+        return Connector.text_connectors()
 
     def gdo_parameters(self) -> [GDT]:
         return [
