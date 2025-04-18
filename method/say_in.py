@@ -7,6 +7,7 @@ from gdo.core.GDT_RestOfText import GDT_RestOfText
 
 class say_in(Method):
 
+    @classmethod
     def gdo_trigger(cls) -> str:
         return 'say.in'
 
