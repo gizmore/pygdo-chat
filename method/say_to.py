@@ -8,7 +8,8 @@ from gdo.core.GDT_User import GDT_User
 
 class say_to(Method):
 
-    def gdo_trigger(self) -> str:
+    @classmethod
+    def gdo_trigger(cls) -> str:
         return 'say.to'
 
     def gdo_connectors(self) -> str:
