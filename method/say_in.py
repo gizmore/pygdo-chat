@@ -11,7 +11,7 @@ class say_in(Method):
     def gdo_trigger(cls) -> str:
         return 'say.in'
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_Channel('channel').not_null().multiple(),
             GDT_RestOfText('message').not_null(),

@@ -15,7 +15,7 @@ class say_to(Method):
     def gdo_connectors(self) -> str:
         return Connector.text_connectors()
 
-    def gdo_parameters(self) -> [GDT]:
+    def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_User('to').not_null(),
             GDT_RestOfText('message').not_null(),
