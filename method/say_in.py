@@ -13,12 +13,12 @@ class say_in(Method):
 
     def gdo_parameters(self) -> list[GDT]:
         return [
-            GDT_Channel('channel').not_null().multiple(),
+            GDT_Channel('channel').not_null(),
             GDT_RestOfText('message').not_null(),
         ]
 
     def get_channels(self) -> list[GDO_Channel]:
-        return self.param_value('channel')
+        return [self.param_value('channel')]
 
     async def execute(self):
         msg_txt = self.param_value('message')
