@@ -27,5 +27,6 @@ class say_to(Method):
     async def gdo_execute(self) -> GDT:
         target = self.get_target()
         message = self.param_value('message')
-        await target.get_server().send_to_user(target, '%s', [message])
+        sender = self._env_user.get_displayname().capitalize()
+        await target.get_server().send_to_user(target, f'{sender} says: {message}')
         return self.empty()
