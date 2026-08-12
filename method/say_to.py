@@ -2,6 +2,7 @@ from gdo.base.GDT import GDT
 from gdo.base.Method import Method
 from gdo.core.Connector import Connector
 from gdo.core.GDO_User import GDO_User
+from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_RestOfText import GDT_RestOfText
 from gdo.core.GDT_User import GDT_User
 
@@ -12,12 +13,16 @@ class say_to(Method):
     def gdo_trigger(cls) -> str:
         return 'say.to'
 
+    def gdo_user_permission(self) -> str | None:
+        return 'admin'
+
     def gdo_connectors(self) -> str:
         return Connector.text_connectors()
 
     def gdo_parameters(self) -> list[GDT]:
         return [
             GDT_User('to').not_null(),
+            GDT_Bool('prefix').not_null().initial('1'),
             GDT_RestOfText('message').not_null(),
         ]
 
@@ -27,6 +32,8 @@ class say_to(Method):
     async def gdo_execute(self) -> GDT:
         target = self.get_target()
         message = self.param_value('message')
-        sender = self._env_user.get_displayname().capitalize()
-        await target.get_server().send_to_user(target, f'{sender} says: {message}')
+        if self.param_value('prefix'):
+            sender = self._env_user.get_displayname().capitalize()
+            message = f'{sender} says: {message}'
+        await target.get_server().send_to_user(target, message)
         return self.empty()

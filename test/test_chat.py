@@ -3,6 +3,7 @@ from unittest.mock import AsyncMock, patch
 
 from gdo.base.Message import Message
 from gdo.chat.method.say_in import say_in
+from gdo.chat.method.say_to import say_to
 from gdo.chat.method.exec_in import exec_in
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
@@ -27,9 +28,22 @@ class test_chat(GDOTestCase):
 
     def test_say_in_accepts_rest_of_text(self):
         Application.mode(Mode.render_cli)
-        channel, message = say_in().gdo_parameters()
+        channel, prefix, message = say_in().gdo_parameters()
         self.assertFalse(channel.is_multiple())
+        self.assertEqual('1', prefix.get_initial())
         self.assertIsInstance(message, GDT_RestOfText)
+
+    def test_say_methods_need_admin(self):
+        self.assertEqual('admin', say_in().gdo_user_permission())
+        self.assertEqual('admin', say_to().gdo_user_permission())
+
+    def test_say_methods_allow_explicit_prefix_control(self):
+        for method_type in (say_in, say_to):
+            method = method_type()
+            self.assertTrue(method.param_value('prefix'))
+            method.input('prefix', '0')
+            method.parameters(reset=True)
+            self.assertFalse(method.param_value('prefix'))
 
     async def test_exec_in_uses_target_channel_context(self):
         user = await Bash.get_server().get_or_create_user('chat_exec')
