@@ -45,6 +45,10 @@ class test_chat(GDOTestCase):
             method.parameters(reset=True)
             self.assertFalse(method.param_value('prefix'))
 
+    def test_message_can_suppress_connector_sender_prefix(self):
+        message = Message('raw command', Mode.render_cli).no_sender_prefix()
+        self.assertTrue(message._no_sender_prefix)
+
     async def test_exec_in_uses_target_channel_context(self):
         user = await Bash.get_server().get_or_create_user('chat_exec')
         channel = Bash.get_server().get_or_create_channel('chat_exec_target')
