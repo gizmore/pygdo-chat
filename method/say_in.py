@@ -26,7 +26,7 @@ class say_in(Method):
     def get_channels(self) -> list[GDO_Channel]:
         return [self.param_value('channel')]
 
-    async def execute(self):
+    async def gdo_execute(self) -> GDT:
         msg_txt = self.param_value('message')
         with_prefix = self.param_value('prefix')
         if with_prefix:
