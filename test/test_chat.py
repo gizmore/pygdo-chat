@@ -5,6 +5,7 @@ from gdo.base.Message import Message
 from gdo.chat.method.say_in import say_in
 from gdo.chat.method.say_to import say_to
 from gdo.chat.method.exec_in import exec_in
+from gdo.chat.method.exec_to import exec_to
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
@@ -68,3 +69,22 @@ class test_chat(GDOTestCase):
         self.assertIs(channel, executed._env_channel)
         self.assertIs(channel.get_server(), executed._env_server)
         self.assertIs(user, executed._env_user)
+
+    async def test_exec_to_uses_target_user_connector_context(self):
+        requester = await Bash.get_server().get_or_create_user('chat_exec_requester')
+        target = await Bash.get_server().get_or_create_user('chat_exec_target_user')
+        method = exec_to().env_user(requester, True).env_server(Bash.get_server()).env_channel(None)
+        method.input('user', str(target.get_id())).input('command', '$ping')
+        with (patch.object(target.get_server().get_connector(), 'send_to_user', new=AsyncMock()) as send,
+              patch.object(Message, 'execute', new=AsyncMock()) as execute):
+            await method.gdo_execute()
+        send.assert_awaited_once()
+        announced = send.await_args.args[0]
+        self.assertEqual(f'{requester.get_displayname()}: $ping', announced._result)
+        self.assertIs(target, announced._env_user)
+        execute.assert_awaited_once()
+        executed = Message.CURRENT
+        self.assertEqual('$ping', executed._message)
+        self.assertIsNone(executed._env_channel)
+        self.assertIs(target.get_server(), executed._env_server)
+        self.assertIs(target, executed._env_user)
