@@ -1,5 +1,5 @@
 import os
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from gdo.base.Message import Message
 from gdo.chat.method.say_in import say_in
@@ -49,6 +49,18 @@ class test_chat(GDOTestCase):
     def test_message_can_suppress_connector_sender_prefix(self):
         message = Message('raw command', Mode.render_cli).no_sender_prefix()
         self.assertTrue(message._no_sender_prefix)
+
+    def test_message_renders_top_bar_with_a_connector_specific_result(self):
+        page = MagicMock()
+        page._top_bar.render.side_effect = lambda mode: f'top-{mode.name}'
+        result = MagicMock()
+        result.render.side_effect = lambda mode: f'body-{mode.name}'
+        message = Message('command', Mode.render_cli).result_gdt(result)
+        with patch.object(Application, 'get_page', return_value=page):
+            self.assertEqual(
+                'top-render_irc body-render_irc',
+                message.render_response(Mode.render_irc),
+            )
 
     async def test_exec_in_uses_target_channel_context(self):
         user = await Bash.get_server().get_or_create_user('chat_exec')
