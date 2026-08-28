@@ -1,1 +1,2 @@
 module_chat = "Chat"
+msg_global_message_sent = "Global message sent to %s channels."

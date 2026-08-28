@@ -6,6 +6,7 @@ from gdo.chat.method.say_in import say_in
 from gdo.chat.method.say_to import say_to
 from gdo.chat.method.exec_in import exec_in
 from gdo.chat.method.exec_to import exec_to
+from gdo.chat.method.global_message import global_message
 from gdo.base.Application import Application
 from gdo.base.ModuleLoader import ModuleLoader
 from gdo.base.Render import Mode
@@ -37,6 +38,13 @@ class test_chat(GDOTestCase):
     def test_say_methods_need_admin(self):
         self.assertEqual('admin', say_in().gdo_user_permission())
         self.assertEqual('admin', say_to().gdo_user_permission())
+
+    def test_transport_methods_are_hidden_and_global_message_is_owner_only(self):
+        self.assertTrue(all(method().gdo_method_hidden()
+                            for method in (exec_in, exec_to, say_in, say_to)))
+        self.assertEqual('global.message', global_message.gdo_trigger())
+        self.assertEqual('gmsg', global_message.gdo_trig())
+        self.assertEqual('owner', global_message().gdo_user_permission())
 
     def test_say_methods_allow_explicit_prefix_control(self):
         for method_type in (say_in, say_to):

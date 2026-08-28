@@ -12,6 +12,9 @@ class exec_to(Method):
     def gdo_trigger(cls) -> str:
         return 'chat.exec.to'
 
+    def gdo_method_hidden(self) -> bool:
+        return True
+
     def gdo_user_permission(self) -> str:
         return 'admin'
 
