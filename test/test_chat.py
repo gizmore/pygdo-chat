@@ -70,6 +70,30 @@ class test_chat(GDOTestCase):
                 message.render_response(Mode.render_irc),
             )
 
+    async def test_message_executes_with_the_target_connector_mode(self):
+        """A TCP transport must not leak CLI colors into an IRC command."""
+        server = MagicMock()
+        server.get_trigger.return_value = '$'
+        server.get_connector.return_value.get_render_mode.return_value = Mode.render_irc
+        user = await Bash.get_server().get_or_create_user('chat_render_mode')
+        message = Message('$ping', Mode.render_cli).env_server(server).env_user(user)
+        method = MagicMock()
+        observed = []
+
+        async def run(_message):
+            observed.append(Application.get_mode())
+
+        Application.mode(Mode.render_cli)
+        with (
+            patch.object(Application.EVENTS, 'publish', new=AsyncMock()),
+            patch('gdo.base.Message.Parser.parse', return_value=method),
+            patch.object(Message, 'run', new=run),
+        ):
+            await message.execute()
+
+        self.assertEqual([Mode.render_irc], observed)
+        self.assertEqual(Mode.render_cli, Application.get_mode())
+
     async def test_exec_in_uses_target_channel_context(self):
         user = await Bash.get_server().get_or_create_user('chat_exec')
         channel = Bash.get_server().get_or_create_channel('chat_exec_target')
