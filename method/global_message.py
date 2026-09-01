@@ -16,7 +16,7 @@ class global_message(Method):
     def gdo_trig(cls) -> str:
         return 'gmsg'
 
-    def gdo_user_permission(self) -> str:
+    def gdo_user_permission(self) -> str | None:
         return 'owner'
 
     def gdo_parameters(self) -> list[GDT]:

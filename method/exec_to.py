@@ -15,7 +15,7 @@ class exec_to(Method):
     def gdo_method_hidden(self) -> bool:
         return True
 
-    def gdo_user_permission(self) -> str:
+    def gdo_user_permission(self) -> str | None:
         return 'admin'
 
     def gdo_parameters(self) -> list[GDT]:
