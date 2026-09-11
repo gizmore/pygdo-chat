@@ -1,0 +1,5 @@
+module_chat = "Chat"
+mt_chat_shout = "Rundruf"
+md_chat_shout = "Sende eine Nachricht in alle Kanäle auf allen Servern. Der Ausgangsserver legt den Preis in Credits fest."
+cfg_price = "Methodenpreis (Credits)"
+msg_shout_sent = "Rundruf an %s Kanäle über alle Server gesendet."

@@ -1,2 +1,6 @@
 module_chat = "Chat"
+mt_chat_shout = "Shout"
+md_chat_shout = "Send a message to all channels on all servers. The origin server sets the price in credits."
+cfg_price = "Method price (credits)"
+msg_shout_sent = "Shout sent to %s channels across all servers."
 msg_global_message_sent = "Global message sent to %s channels."
