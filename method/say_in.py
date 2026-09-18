@@ -23,6 +23,7 @@ class say_in(Method):
         return [
             GDT_Channel('channel').not_null(),
             GDT_Bool('prefix').not_null().initial('1'),
+            GDT_Bool('execute').not_null().initial('0'),
             GDT_RestOfText('message').not_null(),
         ]
 
@@ -32,6 +33,7 @@ class say_in(Method):
     async def gdo_execute(self) -> GDT:
         msg_txt = self.param_value('message')
         with_prefix = self.param_value('prefix')
+        execute = self.param_value('execute')
         if with_prefix:
             sender = self._env_user.get_displayname().capitalize()
             msg_txt = f'{sender} says: {msg_txt}'
@@ -42,5 +44,12 @@ class say_in(Method):
             if not with_prefix:
                 message.no_sender_prefix()
             await server.get_connector().send_to_channel(message)
+            # IRC does not echo an own PRIVMSG back to its sender.  Agents
+            # nevertheless need the same visible command line to be handled
+            # locally, just as if it had arrived from another client.
+            if execute:
+                await (Message(self.param_value('message'), server.get_render_mode()).
+                       env_copy(self).env_server(server).env_channel(channel).
+                       env_user(self._env_user, True).execute())
         return self.empty()
     
