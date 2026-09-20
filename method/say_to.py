@@ -26,6 +26,7 @@ class say_to(Method):
         return [
             GDT_User('to').not_null(),
             GDT_Bool('prefix').not_null().initial('1'),
+            GDT_Bool('mira').not_null().initial('0'),
             GDT_RestOfText('message').not_null(),
         ]
 
@@ -38,5 +39,6 @@ class say_to(Method):
         if self.param_value('prefix'):
             sender = self._env_user.get_displayname().capitalize()
             message = f'{sender} says: {message}'
-        await target.get_server().send_to_user(target, message)
+        await target.get_server().send_to_user(
+            target, message, mira_reply=self.param_value('mira'))
         return self.empty()

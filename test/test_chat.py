@@ -30,10 +30,11 @@ class test_chat(GDOTestCase):
 
     def test_say_in_accepts_rest_of_text(self):
         Application.mode(Mode.render_cli)
-        channel, prefix, execute, message = say_in().gdo_parameters()
+        channel, prefix, execute, mira, message = say_in().gdo_parameters()
         self.assertFalse(channel.is_multiple())
         self.assertEqual('1', prefix.get_initial())
         self.assertEqual('0', execute.get_initial())
+        self.assertEqual('0', mira.get_initial())
         self.assertIsInstance(message, GDT_RestOfText)
 
     def test_say_methods_need_admin(self):
