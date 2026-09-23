@@ -2,8 +2,11 @@ from gdo.base.GDT import GDT
 from gdo.base.Message import Message
 from gdo.base.Method import Method
 from gdo.core.GDO_Channel import GDO_Channel
+from gdo.core.GDT_Bool import GDT_Bool
 from gdo.core.GDT_RestOfText import GDT_RestOfText
 from gdo.core.GDT_UInt import GDT_UInt
+from gdo.chat.GDO_ChatShout import GDO_ChatShout
+from gdo.chat.module_chat import module_chat
 
 
 class shout(Method):
@@ -24,10 +27,25 @@ class shout(Method):
         return True
 
     def gdo_parameters(self) -> list[GDT]:
-        return [GDT_RestOfText('message').not_null()]
+        return [
+            GDT_Bool('anon').not_null().initial('0'),
+            GDT_RestOfText('message').not_null(),
+        ]
 
     async def gdo_execute(self) -> GDT:
-        text = f'{self._env_user.get_displayname()} shouts: {self.param_value("message")}'
+        anonymous = self.param_value('anon')
+        chat = module_chat.instance()
+        if anonymous and not chat.cfg_shout_allow_anon():
+            return self.err('err_shout_anon_disabled')
+        message = self.param_value('message')
+        GDO_ChatShout.blank({
+            'shout_creator': self._env_user.get_id(),
+            'shout_channel': self._env_channel.get_id() if self._env_channel else None,
+            'shout_anonymous': str(int(anonymous)),
+            'shout_message': message,
+        }).insert()
+        sender = self._env_user.get_displayname() if chat.cfg_shout_show_sender() and not anonymous else 'Someone'
+        text = f'{sender} shouts: {message}'
         channels = GDO_Channel.table().select().exec()
         count = 0
         for channel in channels:
