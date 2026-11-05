@@ -44,8 +44,7 @@ class say_in(Method):
             message = (Message(msg_txt, server.get_render_mode()).env_copy(self).
                        env_server(server).env_channel(channel).result(msg_txt))
             message._mira_reply = is_mira_reply
-            if not with_prefix:
-                message.no_sender_prefix()
+            message.no_sender_prefix()
             await server.get_connector().send_to_channel(message)
             # IRC does not echo an own PRIVMSG back to its sender.  Agents
             # nevertheless need the same visible command line to be handled
